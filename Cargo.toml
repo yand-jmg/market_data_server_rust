@@ -1,5 +1,14 @@
 [package]
+authors = ["Jason McGuiness <coder@chussar.me.uk>"]
+categories = ["command-line-utilities", "finance", "web-programming::websocket"]
+description = "A very simple market-data server that receives via web sockets and publishes via gRPC."
+documentation = "https://github.com/yand-jmg/market_data_server_rust"
+homepage = "https://github.com/yand-jmg/market_data_server_rust"
+keywords = ["market data", "server", "web sockets", "gRPC"]
+license = "GNU Lesser General Public License v2.1"
 name = "market_data_server_rust"
+readme = "README.md"
+repository = "https://github.com/yand-jmg/market_data_server_rust"
 version = "0.1.0"
 edition = "2021"
 

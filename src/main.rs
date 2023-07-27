@@ -1,3 +1,5 @@
+// Derived from https://tms-dev-blog.com/easily-connect-to-binance-websocket-streams-with-rust/
+
 use signal_hook::{consts::SIGINT, consts::SIGTERM};
 use simple_logger::SimpleLogger;
 use std::{error::Error};
@@ -5,6 +7,8 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tungstenite::connect;
 use url::Url;
+
+mod models;
 
 // TODO Need to handle all exchanges...
 static BINANCE_WS_API: &str = "wss://stream.binance.com:9443";
@@ -39,8 +43,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         };
 
-        let parsed_data: serde_json::Value = serde_json::from_str(&msg).expect(&format!("Unable to parse message from: '{}'.", binance_url));
-        log::info!("{:?}", parsed_data);
+//        let parsed_data: serde_json::Value = serde_json::from_str(&msg).expect(&format!("Unable to parse message from: '{}'.", binance_url));
+//        log::info!("{:?}", parsed_data);
+        let parsed: models::DepthStreamData = serde_json::from_str(&msg).expect(&format!("Unable to parse message from: '{}'.", binance_url));
+        for i in 0..parsed.asks.len() {
+            println!(
+                "{}. ask: {}, size: {}",
+                i, parsed.asks[i].price, parsed.asks[i].size
+            );
+        }
         // TODO Need to push this to gRPC...
     }
     log::info!("Finished receiving market-data, exiting.");

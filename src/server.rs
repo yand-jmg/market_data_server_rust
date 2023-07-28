@@ -10,6 +10,43 @@ use url::Url;
 
 mod models;
 
+use tonic::{transport::Server, Request, Response, Status};
+use orderbook::{Empty, Summary, Level, orderbook_aggregator_server::{OrderbookAggregator, OrderbookAggregatorServer}};
+
+pub mod orderbook {
+    tonic::include_proto!("orderbook");
+}
+
+#[derive(Debug, Default)]
+pub struct OrderbookAggregatorService {}
+
+#[tonic::async_trait]
+impl OrderbookAggregator for OrderbookAggregatorService {
+    async fn book_summary(&self, request: Request<Empty>) -> Result<Response<Summary>, Status> {
+        // TODO: put the right values in...
+        let bids_update=vec![
+            Level {
+                exchange: "TODO1".to_string(),
+                price: 42.0,
+                amount: 67.0
+            }
+        ];
+        let asks_update=vec![
+            Level {
+                exchange: "TODO2".to_string(),
+                price: 42.0,
+                amount: 67.0
+            }
+        ];
+        let response = Summary {
+            spread: 68.0,
+            bids: bids_update,
+            asks: asks_update
+        };
+        Ok(Response::new(response))
+    }
+}
+
 // TODO Need to handle all exchanges...
 static BINANCE_WS_API: &str = "wss://stream.binance.com:9443";
 static BINANCE_INSTRUMENT: &str = "ethbtc";

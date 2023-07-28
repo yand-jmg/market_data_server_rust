@@ -13,10 +13,11 @@ mod models;
 // TODO Need to handle all exchanges...
 static BINANCE_WS_API: &str = "wss://stream.binance.com:9443";
 static BINANCE_INSTRUMENT: &str = "ethbtc";
-static BINANCE_INSTRUMENT_DETAILS: &str = "depth5@100ms";
+static BINANCE_INSTRUMENT_DETAILS: &str = "depth10@100ms";
 
 fn main() -> Result<(), Box<dyn Error>> {
     SimpleLogger::new().init().unwrap();
+    log::info!("Market-data server version: {}", env!("GIT_HASH"));
     let exit_main = Arc::new(AtomicBool::new(false));
     signal_hook::flag::register(SIGTERM|SIGINT, Arc::clone(&exit_main))?;
     // TODO consider cmmand-line arguments for passing in the exchange URLs. Also some form of help.
@@ -47,9 +48,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 //        log::info!("{:?}", parsed_data);
         let parsed: models::DepthStreamData = serde_json::from_str(&msg).expect(&format!("Unable to parse message from: '{}'.", binance_url));
         for i in 0..parsed.asks.len() {
-            println!(
-                "{}. ask: {}, size: {}",
-                i, parsed.asks[i].price, parsed.asks[i].size
+            log::info!(
+                "{}. ask: {}, size: {}. bid: {}, size: {}",
+                i, parsed.asks[i].price, parsed.asks[i].size, parsed.bids[i].price, parsed.bids[i].size
             );
         }
         // TODO Need to push this to gRPC...
